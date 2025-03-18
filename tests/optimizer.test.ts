@@ -1,4 +1,4 @@
-import { optimizeCuts } from "../src/optimizer";
+import { generateCutSheets } from "../src/generator";
 
 test("optimizes basic cuts", () => {
     const stock = { width: 500, length: 300, kerf: 5 };
@@ -11,7 +11,7 @@ test("optimizes basic cuts", () => {
         { width: 200, length: 50 }
     ];
 
-    const { layout, waste } = optimizeCuts(stock, pieces);
+    const { layout, waste } = generateCutSheets(stock, pieces);
 
     expect(layout.length).toBe(pieces.length);
     expect(waste).toBeGreaterThanOrEqual(0);

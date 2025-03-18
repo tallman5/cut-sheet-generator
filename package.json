@@ -9,9 +9,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
+    "dist": "tsc --project tsconfig.build.json",
+    "distpack": "tsc --project tsconfig.build.json && npm pack",
+    "prepublishOnly": "npm run build",
+    "publish": "npm publish --access=public",
     "test": "jest",
-    "prepublishOnly": "npm run build"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "license": "ISC",

@@ -1,4 +1,5 @@
-import { optimizeCuts } from "./optimizer";
+import { generateCutSheets } from "./generator";
 import { generateCutSheetSVG, generateCutSheetPNG } from "./renderer";
 
-export { optimizeCuts, generateCutSheetSVG, generateCutSheetPNG };
+export * from './models';
+export { generateCutSheets as optimizeCuts, generateCutSheetSVG, generateCutSheetPNG };
