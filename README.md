@@ -18,19 +18,28 @@ npm install @tallman5/cut-sheet-generator
 ## Usage
 ### Import in JavaScript/TypeScript
 ```ts
-import { optimizeCuts, generateCutSheetSVG, generateCutSheetPNG } from "@tallman5/cut-sheet-generator";
+import { generateCutSheets, generateCutSheetSvg, IGeneratorConfig, IGeneratorResult } from "@tallman5/cut-sheet-generator";
 
-const stock = { length: 500, width: 300, kerf: 5 };
+const stockMaterials = [
+    { length: 500, width: 300 },
+    { length: 600, width: 400 }
+];
 const pieces = [
-  { length: 100, width: 100 },
-  { length: 150, width: 100 },
-  { length: 200, width: 50, grainDirection: "length" }
+    { length: 100, width: 100 },
+    { length: 150, width: 100 },
+    { length: 200, width: 50 }
 ];
 
-const optimized = optimizeCuts(stock, pieces);
-const svgOutput = generateCutSheetSVG(stock, optimized.layout);
-console.log(svgOutput);
-generateCutSheetPNG(stock, optimized.layout, "cut-sheet.png");
+const genConfig: IGeneratorConfig = {
+    stockMaterials,
+    pieces,
+    considerGrain: false,
+    kerf: 2
+};
+
+const result: IGeneratorResult = generateCutSheets(genConfig);
+const svg = generateCutSheetSVG(genConfig.stockMaterials, result.layout);
+console.log(svg);
 ```
 
 ## API

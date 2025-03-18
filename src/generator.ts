@@ -42,7 +42,7 @@ export function generateCutSheets(config: IGeneratorConfig): IGeneratorResult {
   return { layout, waste };
 }
 
-export function generateCutSheetSVG(stocks: IPanel[], layout: ILayout[]): string {
+export function generateCutSheetSvg(stocks: IPanel[], layout: ILayout[]): string {
   const padding = 20;
   let totalWidth = stocks.reduce((sum, stock) => sum + stock.width + padding, 0) - padding;
   let maxHeight = Math.max(...stocks.map(stock => stock.length));

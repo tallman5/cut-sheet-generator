@@ -1,5 +1,5 @@
 import { writeFileSync } from "fs";
-import { generateCutSheets, generateCutSheetSVG } from "../src/generator";
+import { generateCutSheets, generateCutSheetSvg } from "../src/generator";
 import { IGeneratorConfig, IGeneratorResult } from "../src/models";
 
 test("generates basic cut sheet", () => {
@@ -25,6 +25,6 @@ test("generates basic cut sheet", () => {
     expect(result.layout.length).toBe(genConfig.pieces.length);
     expect(result.waste).toBeGreaterThanOrEqual(0);
 
-    const svg = generateCutSheetSVG(genConfig.stockMaterials, result.layout);
+    const svg = generateCutSheetSvg(genConfig.stockMaterials, result.layout);
     writeFileSync("cut-sheet.svg", svg);
 });
