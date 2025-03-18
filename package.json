@@ -1,8 +1,8 @@
 {
   "name": "@tallman5/cut-sheet-generator",
   "version": "1.0.0",
-  "author": "Joseph McGurkin <joseph@mcgurkin.net>",
-  "description": "Generate cut sheets for given lists of needed pieces and stock.",
+  "author": "tallman5",
+  "description": "An optimized cut sheet generator that efficiently arranges pieces on stock materials, minimizing waste and generating visual layouts in SVG and PNG formats.",
   "main": "dist/index.js",
   "type": "module",
   "files": [
