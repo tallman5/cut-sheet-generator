@@ -1,12 +1,12 @@
 # @tallman5/cut-sheet-generator
 
-A Node.js package for optimizing material cut lists with optional **kerf (blade thickness)** and **grain direction** considerations. Generates optimized cut layouts and exports them as **SVG** or **PNG**.
+A Node.js package for optimizing material cut lists with optional **kerf (blade thickness)** and **grain direction** considerations. Generates optimized cut layouts and exports them as **SVG**.
 
 ## Features
 ✅ Optimizes material usage with **bin packing** algorithms (TBD)  
 ✅ Supports **kerf (blade thickness)** adjustments  
 ✅ Considers **grain direction** (length or width)  
-✅ Outputs **SVG/PNG** visual representations  
+✅ Outputs **SVG** visual representations  
 ✅ CLI support coming soon  
 ✅ Fully written in TypeScript  
 
@@ -56,7 +56,9 @@ The library generates an **SVG** that can be previewed in a browser or embedded 
 - [ ] Support **multi-stock selection**
 
 ## License
-MIT
+Cut Sheet Generator © 2025 by Joseph McGurkin is licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1)
+
+<img style="height:22px!important;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt="">&nbsp;<img style="height:22px!important;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt="">&nbsp;<img style="height:22px!important;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt="">&nbsp;<img style="height:22px!important;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt="">
 
 ---
 Contributions and feature requests are welcome! 🚀
