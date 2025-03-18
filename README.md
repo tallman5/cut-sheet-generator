@@ -1,7 +1,7 @@
-# Cut Sheet Optimizer
+# Cut Sheet Generator
 
 ## Overview
-The **Cut Sheet Optimizer** is a JavaScript/TypeScript module that efficiently arranges pieces onto stock materials while minimizing waste and reducing the number of cuts. The algorithm utilizes a **best-fit guillotine packing strategy**, considers **grain direction**, and generates **visual representations** (SVG/PNG) for layout visualization.
+The **Cut Sheet Generator** is a JavaScript/TypeScript module that efficiently arranges pieces onto stock materials while minimizing waste and reducing the number of cuts. The algorithm utilizes a **best-fit guillotine packing strategy**, considers **grain direction**, and generates **visual representations** (SVG/PNG) for layout visualization.
 
 ## Features
 - **Optimized Stock Cutting**: Uses a best-fit algorithm to minimize waste.
