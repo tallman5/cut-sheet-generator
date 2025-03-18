@@ -1,29 +1,32 @@
 import { createCanvas } from "canvas";
 
-export enum GrainDirection { Length = "length", Width = "width", UnSet = "unset" }
-export interface IPanel { grainDirection?: GrainDirection; length: number; quantity: number; width: number; }
-export interface ILayout { color: string; length: number; stockIndex: number; width: number; x: number; y: number; };
+export enum GrainDirection { Length = "length", Width = "width", Any = "any" }
 export interface IGeneratorConfig { stockMaterials: IPanel[]; pieces: IPanel[]; kerf?: number; considerGrain: boolean; }
 export interface IGeneratorResult { layout: ILayout[]; waste: number; }
+export interface ILayout { color: string; length: number; stockIndex: number; width: number; x: number; y: number; };
 export interface INode { down?: INode; length: number; right?: INode; used: boolean; width: number; x: number; y: number; }
+export interface IPanel { grainDirection?: GrainDirection; length: number; quantity: number; width: number; }
 
-export function generateCutSheets(config: IGeneratorConfig): { layout: ILayout[], waste: number } {
+export async function generateCutSheetsAsync(config: IGeneratorConfig): Promise<IGeneratorResult> {
   let layout: ILayout[] = [];
   let waste = 0;
   let remainingPieces: IPanel[] = [];
+  let stocks: IPanel[] = [];
   const kerf = config.kerf || 0;
-  const stocks = config.stockMaterials;
-  const pieces = config.pieces;
 
-  // Expand pieces based on quantity
-  pieces.forEach(piece => {
-    for (let i = 0; i < piece.quantity; i++) {
-      remainingPieces.push({ ...piece });
+  config.stockMaterials.forEach(panel => {
+    for (let i = 0; i < panel.quantity; i++) {
+      stocks.push({ ...panel });
     }
   });
 
-  // Sort pieces by largest area first (greedy strategy)
-  remainingPieces.sort((a, b) => (b.length * b.width) - (a.length * a.width));
+  config.pieces.forEach(panel => {
+    for (let i = 0; i < panel.quantity; i++) {
+      remainingPieces.push({ ...panel });
+    }
+  });
+
+  remainingPieces.sort((a, b) => Math.max(b.length, b.width) - Math.max(a.length, a.width));
 
   const colorMap = new Map<string, string>();
   const colors = ["red", "green", "blue", "orange", "purple", "yellow", "pink", "cyan", "brown", "gray"];
@@ -35,9 +38,9 @@ export function generateCutSheets(config: IGeneratorConfig): { layout: ILayout[]
     const root: INode = { x: 0, y: 0, width: stock.width, length: stock.length, used: false };
 
     for (let piece of [...remainingPieces]) {
-      let node = findNode(root, piece.width, piece.length);
+      let node = await findBestFitNodeAsync(root, piece.width, piece.length);
       if (node) {
-        let placedNode = splitNode(node, piece.width, piece.length, kerf);
+        let placedNode = await splitNodeAsync(node, piece.width, piece.length, kerf);
         let pieceKey = `${piece.width}x${piece.length}`;
 
         if (!colorMap.has(pieceKey)) {
@@ -61,25 +64,37 @@ export function generateCutSheets(config: IGeneratorConfig): { layout: ILayout[]
   return { layout, waste };
 }
 
-function splitNode(node: INode, width: number, length: number, kerf: number): INode {
+async function splitNodeAsync(node: INode, width: number, length: number, kerf: number): Promise<INode> {
   node.used = true;
   node.down = { x: node.x, y: node.y + length + kerf, width: node.width, length: node.length - length - kerf, used: false };
   node.right = { x: node.x + width + kerf, y: node.y, width: node.width - width - kerf, length, used: false };
   return node;
 }
 
-function findNode(root: INode, width: number, length: number): INode | null {
-  if (root.used) {
-    return findNode(root.right!, width, length) || findNode(root.down!, width, length);
-  } else if (width <= root.width && length <= root.length) {
-    return root;
+async function findBestFitNodeAsync(root: INode, width: number, length: number): Promise<INode | null> {
+  let bestFit: INode | null = null;
+  let smallestWaste = Infinity;
+
+  function traverse(node: INode) {
+    if (node.used) {
+      if (node.right) traverse(node.right);
+      if (node.down) traverse(node.down);
+    } else if (width <= node.width && length <= node.length) {
+      let remainingArea = (node.width * node.length) - (width * length);
+      if (remainingArea < smallestWaste) {
+        bestFit = node;
+        smallestWaste = remainingArea;
+      }
+    }
   }
-  return null;
+
+  traverse(root);
+  return bestFit;
 }
 
-export function generateCutSheetSvg(stocks: IPanel[], layout: ILayout[]): string {
+export async function generateCutSheetSvgAsync(stocks: IPanel[], layout: ILayout[]): Promise<string> {
   const padding = 5;
-  const strokeWidth = .1; // Define stroke width
+  const strokeWidth = .1;
   let totalWidth = stocks.reduce((sum, stock) => sum + stock.width + padding, 0) - padding;
   let maxHeight = Math.max(...stocks.map(stock => stock.length));
 
@@ -100,7 +115,7 @@ export function generateCutSheetSvg(stocks: IPanel[], layout: ILayout[]): string
   return svg;
 }
 
-export function generateCutSheetPng(stocks: IPanel[], layout: ILayout[]): Buffer {
+export async function generateCutSheetPngAsync(stocks: IPanel[], layout: ILayout[]): Promise<Buffer<ArrayBufferLike>> {
   const scale = 20;
   const padding = 10 * scale;
   const strokeWidth = 2;
