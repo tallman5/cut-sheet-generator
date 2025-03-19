@@ -1,13 +1,14 @@
-# Cut Sheet Generator
+# @tallman5/cut-sheet-generator
 
 ## Overview
 The **Cut Sheet Generator** is a JavaScript/TypeScript module that efficiently arranges pieces onto stock materials while minimizing waste and reducing the number of cuts. The algorithm utilizes a **best-fit guillotine packing strategy**, considers **grain direction**, and generates **visual representations** (SVG/PNG) for layout visualization.
 
 ## Features
-- **Optimized Stock Cutting**: Uses a best-fit algorithm to minimize waste.
-- **Kerf Consideration**: Accounts for blade thickness in cutting calculations.
-- **Grain Direction Support**: Ensures pieces are placed according to material grain direction.
-- **SVG & PNG Visualization**: Generates graphical representations of cut layouts.
+1. **Optimized Stock Cutting**: Uses a best-fit algorithm to minimize waste.
+1. **Kerf Consideration**: Accounts for blade thickness in cutting calculations.
+1. **Grain Direction Support**: Ensures pieces are placed according to material grain direction.
+1. **Legend Generation**: Provides a legend mapping piece dimensions to colors.
+1. **SVG & PNG Visualization**: Generates graphical representations of cut layouts.
 
 ## Installation
 ```sh
@@ -17,7 +18,7 @@ npm install @tallman5/cut-sheet-generator
 ## Usage
 ### Importing the Module
 ```typescript
-import { generateCutSheets, generateCutSheetSvg, generateCutSheetPng } from "@tallman5/cut-sheet-generator";
+import { generateCutSheetsAsync, generateCutSheetSvgAsync, generateCutSheetPngAsync, generateLegendAsync } from "@tallman5/cut-sheet-generator";
 ```
 
 ### Input Data Structure
@@ -39,7 +40,7 @@ const config = {
 ### Generating Cut Sheets
 ```typescript
 (async () => {
-  const result = await generateCutSheets(config);
+  const result = await generateCutSheetsAsync(config);
   console.log("Layout:", result.layout);
   console.log("Waste:", result.waste);
 })();
@@ -48,7 +49,7 @@ const config = {
 ### Generating SVG Visualization
 ```typescript
 (async () => {
-  const svg = await generateCutSheetSvg(config.stockMaterials, result.layout);
+  const svg = await generateCutSheetSvgAsync(config.stockMaterials, result.layout);
   console.log(svg);
 })();
 ```
@@ -56,8 +57,16 @@ const config = {
 ### Generating PNG Visualization
 ```typescript
 (async () => {
-  const pngBuffer = await generateCutSheetPng(config.stockMaterials, result.layout);
+  const pngBuffer = await generateCutSheetPngAsync(config.stockMaterials, result.layout);
   require("fs").writeFileSync("cut-sheet.png", pngBuffer);
+})();
+```
+
+### Generating a Legend
+```typescript
+(async () => {
+  const legend = await generateLegendAsync(result.layout);
+  console.log(legend);
 })();
 ```
 

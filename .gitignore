@@ -2,3 +2,6 @@ dist/
 node_modules/
 tests/output/
 *.tgz
+.cache/
+public
+src/gatsby-types.d.ts

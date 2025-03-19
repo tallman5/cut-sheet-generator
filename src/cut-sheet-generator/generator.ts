@@ -1,11 +1,32 @@
 import { createCanvas } from "canvas";
 
 export enum GrainDirection { Length = "length", Width = "width", Any = "any" }
-export interface IGeneratorConfig { stockMaterials: IPanel[]; pieces: IPanel[]; kerf?: number; considerGrain: boolean; }
+export interface IGeneratorConfig { projectName?: string; stockMaterials: IPanel[]; pieces: IPanel[]; kerf?: number; considerGrain: boolean; }
 export interface IGeneratorResult { layout: ILayout[]; waste: number; }
 export interface ILayout { color: string; length: number; stockIndex: number; width: number; x: number; y: number; };
 export interface INode { down?: INode; length: number; right?: INode; used: boolean; width: number; x: number; y: number; }
 export interface IPanel { grainDirection?: GrainDirection; length: number; quantity: number; width: number; }
+
+async function findBestFitNodeAsync(root: INode, width: number, length: number): Promise<INode | null> {
+  let bestFit: INode | null = null;
+  let smallestWaste = Infinity;
+
+  function traverse(node: INode) {
+    if (node.used) {
+      if (node.right) traverse(node.right);
+      if (node.down) traverse(node.down);
+    } else if (width <= node.width && length <= node.length) {
+      let remainingArea = (node.width * node.length) - (width * length);
+      if (remainingArea < smallestWaste) {
+        bestFit = node;
+        smallestWaste = remainingArea;
+      }
+    }
+  }
+
+  traverse(root);
+  return bestFit;
+}
 
 export async function generateCutSheetsAsync(config: IGeneratorConfig): Promise<IGeneratorResult> {
   let layout: ILayout[] = [];
@@ -64,57 +85,6 @@ export async function generateCutSheetsAsync(config: IGeneratorConfig): Promise<
   return { layout, waste };
 }
 
-async function splitNodeAsync(node: INode, width: number, length: number, kerf: number): Promise<INode> {
-  node.used = true;
-  node.down = { x: node.x, y: node.y + length + kerf, width: node.width, length: node.length - length - kerf, used: false };
-  node.right = { x: node.x + width + kerf, y: node.y, width: node.width - width - kerf, length, used: false };
-  return node;
-}
-
-async function findBestFitNodeAsync(root: INode, width: number, length: number): Promise<INode | null> {
-  let bestFit: INode | null = null;
-  let smallestWaste = Infinity;
-
-  function traverse(node: INode) {
-    if (node.used) {
-      if (node.right) traverse(node.right);
-      if (node.down) traverse(node.down);
-    } else if (width <= node.width && length <= node.length) {
-      let remainingArea = (node.width * node.length) - (width * length);
-      if (remainingArea < smallestWaste) {
-        bestFit = node;
-        smallestWaste = remainingArea;
-      }
-    }
-  }
-
-  traverse(root);
-  return bestFit;
-}
-
-export async function generateCutSheetSvgAsync(stocks: IPanel[], layout: ILayout[]): Promise<string> {
-  const padding = 5;
-  const strokeWidth = .1;
-  let totalWidth = stocks.reduce((sum, stock) => sum + stock.width + padding, 0) - padding;
-  let maxHeight = Math.max(...stocks.map(stock => stock.length));
-
-  let svg = `<svg width='${totalWidth}' height='${maxHeight}' viewBox='0 0 ${totalWidth} ${maxHeight}' xmlns='http://www.w3.org/2000/svg'>`;
-  let offsetX = 0;
-
-  stocks.forEach((stock, index) => {
-    svg += `<rect x='${offsetX + strokeWidth / 2}' y='${strokeWidth / 2}' width='${stock.width - strokeWidth}' height='${stock.length - strokeWidth}' fill='lightgray' stroke='black' stroke-width='${strokeWidth}' vector-effect='non-scaling-stroke' />`;
-
-    layout.filter(p => p.stockIndex === index).forEach((piece) => {
-      svg += `<rect x='${offsetX + piece.x + strokeWidth / 2}' y='${piece.y + strokeWidth / 2}' width='${piece.width - strokeWidth}' height='${piece.length - strokeWidth}' fill='${piece.color}' stroke='black' stroke-width='${strokeWidth}' vector-effect='non-scaling-stroke' />`;
-    });
-
-    offsetX += stock.width + padding;
-  });
-
-  svg += `</svg>`;
-  return svg;
-}
-
 export async function generateCutSheetPngAsync(stocks: IPanel[], layout: ILayout[]): Promise<Buffer<ArrayBufferLike>> {
   const scale = 20;
   const padding = 10 * scale;
@@ -144,4 +114,49 @@ export async function generateCutSheetPngAsync(stocks: IPanel[], layout: ILayout
   });
 
   return canvas.toBuffer("image/png");
+}
+
+export async function generateCutSheetSvgAsync(stocks: IPanel[], layout: ILayout[]): Promise<string> {
+  const padding = 5;
+  const strokeWidth = .1;
+  let totalWidth = stocks.reduce((sum, stock) => sum + stock.width + padding, 0) - padding;
+  let maxHeight = Math.max(...stocks.map(stock => stock.length));
+
+  let svg = `<svg width='${totalWidth}' height='${maxHeight}' viewBox='0 0 ${totalWidth} ${maxHeight}' xmlns='http://www.w3.org/2000/svg'>`;
+  let offsetX = 0;
+
+  stocks.forEach((stock, index) => {
+    svg += `<rect x='${offsetX + strokeWidth / 2}' y='${strokeWidth / 2}' width='${stock.width - strokeWidth}' height='${stock.length - strokeWidth}' fill='lightgray' stroke='black' stroke-width='${strokeWidth}' vector-effect='non-scaling-stroke' />`;
+
+    layout.filter(p => p.stockIndex === index).forEach((piece) => {
+      svg += `<rect x='${offsetX + piece.x + strokeWidth / 2}' y='${piece.y + strokeWidth / 2}' width='${piece.width - strokeWidth}' height='${piece.length - strokeWidth}' fill='${piece.color}' stroke='black' stroke-width='${strokeWidth}' vector-effect='non-scaling-stroke' />`;
+    });
+
+    offsetX += stock.width + padding;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+export async function generateLegendAsync(layout: ILayout[]): Promise<ILayout[]> {
+  const legend: ILayout[] = [];
+  const seen = new Set<string>();
+
+  layout.forEach(piece => {
+    let key = `${piece.width}x${piece.length}`;
+    if (!seen.has(key)) {
+      legend.push(piece);
+      seen.add(key);
+    }
+  });
+
+  return legend;
+}
+
+async function splitNodeAsync(node: INode, width: number, length: number, kerf: number): Promise<INode> {
+  node.used = true;
+  node.down = { x: node.x, y: node.y + length + kerf, width: node.width, length: node.length - length - kerf, used: false };
+  node.right = { x: node.x + width + kerf, y: node.y, width: node.width - width - kerf, length, used: false };
+  return node;
 }

@@ -1,5 +1,5 @@
 import { writeFileSync } from "fs";
-import {  generateCutSheetPngAsync, generateCutSheetsAsync, generateCutSheetSvgAsync, IGeneratorConfig, IGeneratorResult } from "../src/generator";
+import {  generateCutSheetPngAsync, generateCutSheetsAsync, generateCutSheetSvgAsync, generateLegendAsync, IGeneratorConfig, IGeneratorResult } from "../src/cut-sheet-generator/generator";
 
 test("generates basic cut sheet", async () => {
     const generatorConfig: IGeneratorConfig = {
@@ -52,4 +52,7 @@ test("generates basic cut sheet", async () => {
 
     const png = await generateCutSheetPngAsync(generatorConfig.stockMaterials, result.layout);
     writeFileSync("./tests/output/cut-sheet.png", png);
+
+    const legend = await generateLegendAsync(result.layout);
+    expect(legend.length).toBe(generatorConfig.pieces.length);
 });

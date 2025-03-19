@@ -6,11 +6,13 @@
         "noEmit": false
     },
     "include": [
-        "./src/**/*",
+        "./src/cut-sheet-generator/**/*",
     ],
     "exclude": [
-        "node_modules",
         "dist",
+        "images",
+        "node_modules",
+        "pages",
         "tests"
     ]
 }
