@@ -1,14 +1,14 @@
 # @tallman5/cut-sheet-generator
 
 ## Overview
-The **Cut Sheet Generator** is a JavaScript/TypeScript module that efficiently arranges pieces onto stock materials while minimizing waste and reducing the number of cuts. The algorithm utilizes a **best-fit guillotine packing strategy**, considers **grain direction**, and generates **visual representations** (SVG/PNG) for layout visualization.
+The **Cut Sheet Generator** is a JavaScript/TypeScript module that efficiently arranges pieces onto stock materials while minimizing waste and reducing the number of cuts. The algorithm utilizes a **best-fit guillotine packing strategy**, considers **grain direction**, and generates **visual representations** (SVG) for layout visualization.
 
 ## Features
 1. **Optimized Stock Cutting**: Uses a best-fit algorithm to minimize waste.
 1. **Kerf Consideration**: Accounts for blade thickness in cutting calculations.
 1. **Grain Direction Support**: Ensures pieces are placed according to material grain direction.
 1. **Legend Generation**: Provides a legend mapping piece dimensions to colors.
-1. **SVG & PNG Visualization**: Generates graphical representations of cut layouts.
+1. **SVG Visualization**: Generates graphical representations of cut layouts.
 
 ## Installation
 ```sh
@@ -51,14 +51,6 @@ const config = {
 (async () => {
   const svg = await generateCutSheetSvgAsync(config.stockMaterials, result.layout);
   console.log(svg);
-})();
-```
-
-### Generating PNG Visualization
-```typescript
-(async () => {
-  const pngBuffer = await generateCutSheetPngAsync(config.stockMaterials, result.layout);
-  require("fs").writeFileSync("cut-sheet.png", pngBuffer);
 })();
 ```
 

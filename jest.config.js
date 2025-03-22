@@ -1,8 +1,5 @@
-export default {
-    preset: "ts-jest",
-    testEnvironment: "node",
-    transform: {
-        "^.+\\.ts$": "ts-jest"
-    },
-    moduleFileExtensions: ["ts", "js"],
+module.exports = {
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    testPathIgnorePatterns: ['/node_modules/', '/dist/']
 };

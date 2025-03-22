@@ -7,12 +7,5 @@
     },
     "include": [
         "./src/cut-sheet-generator/**/*",
-    ],
-    "exclude": [
-        "dist",
-        "images",
-        "node_modules",
-        "pages",
-        "tests"
     ]
 }

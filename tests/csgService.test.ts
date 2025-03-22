@@ -1,11 +1,6 @@
 import { CutSheetService } from "../src/cut-sheet-generator/cutSheetService";
 
-// jest.mock("../src/cutSheetService", () => ({
-//   generateCutSheets: jest.fn(() => Promise.resolve({ layout: [], waste: 10 })),
-//   generateCutSheetSvg: jest.fn(() => Promise.resolve("<svg></svg>")),
-// }));
-
-describe("CutSheetService", () => {
+describe("Cut Sheet Service", () => {
   let service: CutSheetService;
 
   beforeEach(() => {
@@ -23,7 +18,7 @@ describe("CutSheetService", () => {
 
   test("should update stock materials", async () => {
     service.setStockMaterials([{ length: 96, width: 48, quantity: 1 }]);
-    await service.updateCutSheet();
+    await service.updateCutSheetAsync();
     expect(service.stockMaterials).toHaveLength(1);
   });
 
@@ -42,7 +37,7 @@ describe("CutSheetService", () => {
 
   test("should update pieces", async () => {
     service.setPieces([{ length: 24, width: 12, quantity: 2 }]);
-    await service.updateCutSheet();
+    await service.updateCutSheetAsync();
     expect(service.pieces).toHaveLength(1);
   });
 
@@ -66,10 +61,14 @@ describe("CutSheetService", () => {
     expect(service.considerGrain).toBe(false);
   });
 
-//   test("should notify listeners when updated", async () => {
-//     const listener = jest.fn();
-//     service.subscribe(listener);
-//     await service.updateCutSheet();
-//     expect(listener).toHaveBeenCalledWith({ svgOutput: "<svg></svg>", waste: 10 });
-//   });
+  test("should notify listeners when updated", async () => {
+    const listener = jest.fn();
+    service.subscribe(listener);
+
+    service.setStockMaterials([{ length: 96, width: 48, quantity: 1 }]);
+    service.addPiece({ length: 24, width: 12, quantity: 2 });
+    await service.updateCutSheetAsync();
+
+    expect(listener).toHaveBeenCalled();
+  });
 });

@@ -1,4 +1,5 @@
-import { generateCutSheetsAsync, generateCutSheetSvgAsync, IPanel } from "./generator";
+import { generateCutSheetsAsync, generateCutSheetSvgAsync } from "./generator";
+import { IPanel } from "./models";
 
 export class CutSheetService {
     stockMaterials: IPanel[] = [];
@@ -10,10 +11,10 @@ export class CutSheetService {
     listeners: any = [];
 
     constructor() {
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
-    async updateCutSheet() {
+    async updateCutSheetAsync() {
         if (!this.stockMaterials.length || !this.pieces.length) return;
 
         const config = {
@@ -31,56 +32,56 @@ export class CutSheetService {
 
     setStockMaterials(stockMaterials: IPanel[]) {
         this.stockMaterials = stockMaterials;
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     addStockMaterial(stockMaterial: IPanel) {
         this.stockMaterials.push(stockMaterial);
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     deleteStockMaterial(index: number) {
         if (index >= 0 && index < this.stockMaterials.length) {
             this.stockMaterials.splice(index, 1);
-            this.updateCutSheet();
+            this.updateCutSheetAsync();
         }
     }
 
     clearStockMaterials() {
         this.stockMaterials = [];
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     setPieces(pieces: IPanel[]) {
         this.pieces = pieces;
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     addPiece(piece: IPanel) {
         this.pieces.push(piece);
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     deletePiece(index: number) {
         if (index >= 0 && index < this.pieces.length) {
             this.pieces.splice(index, 1);
-            this.updateCutSheet();
+            this.updateCutSheetAsync();
         }
     }
 
     clearPieces() {
         this.pieces = [];
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     setKerf(kerf: number) {
         this.kerf = kerf;
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     setConsiderGrain(considerGrain: boolean) {
         this.considerGrain = considerGrain;
-        this.updateCutSheet();
+        this.updateCutSheetAsync();
     }
 
     subscribe(listener: any) {
