@@ -1,4 +1,5 @@
 import { CutSheetService } from "../src/cut-sheet-generator/cutSheetService";
+import { GrainDirection } from "../src/cut-sheet-generator/models";
 
 describe("Cut Sheet Service", () => {
   let service: CutSheetService;
@@ -17,39 +18,39 @@ describe("Cut Sheet Service", () => {
   });
 
   test("should update stock materials", async () => {
-    service.setStockMaterials([{ length: 96, width: 48, quantity: 1 }]);
+    service.setStockMaterials([{ length: 96, width: 48, quantity: 1, grainDirection: GrainDirection.Length }]);
     await service.updateCutSheetAsync();
     expect(service.stockMaterials).toHaveLength(1);
   });
 
   test("should add and remove stock materials", async () => {
-    service.addStockMaterial({ length: 96, width: 48, quantity: 1 });
+    service.addStockMaterial({ length: 96, width: 48, quantity: 1, grainDirection: GrainDirection.Length });
     expect(service.stockMaterials).toHaveLength(1);
     service.deleteStockMaterial(0);
     expect(service.stockMaterials).toHaveLength(0);
   });
 
   test("should clear stock materials", async () => {
-    service.addStockMaterial({ length: 96, width: 48, quantity: 1 });
+    service.addStockMaterial({ length: 96, width: 48, quantity: 1, grainDirection: GrainDirection.Length });
     service.clearStockMaterials();
     expect(service.stockMaterials).toHaveLength(0);
   });
 
   test("should update pieces", async () => {
-    service.setPieces([{ length: 24, width: 12, quantity: 2 }]);
+    service.setPieces([{ length: 24, width: 12, quantity: 2, grainDirection: GrainDirection.Length }]);
     await service.updateCutSheetAsync();
     expect(service.pieces).toHaveLength(1);
   });
 
   test("should add and remove pieces", async () => {
-    service.addPiece({ length: 24, width: 12, quantity: 2 });
+    service.addPiece({ length: 24, width: 12, quantity: 2, grainDirection: GrainDirection.Length });
     expect(service.pieces).toHaveLength(1);
     service.deletePiece(0);
     expect(service.pieces).toHaveLength(0);
   });
 
   test("should clear pieces", async () => {
-    service.addPiece({ length: 24, width: 12, quantity: 2 });
+    service.addPiece({ length: 24, width: 12, quantity: 2, grainDirection: GrainDirection.Length });
     service.clearPieces();
     expect(service.pieces).toHaveLength(0);
   });
@@ -65,8 +66,8 @@ describe("Cut Sheet Service", () => {
     const listener = jest.fn();
     service.subscribe(listener);
 
-    service.setStockMaterials([{ length: 96, width: 48, quantity: 1 }]);
-    service.addPiece({ length: 24, width: 12, quantity: 2 });
+    service.setStockMaterials([{ length: 96, width: 48, quantity: 1, grainDirection: GrainDirection.Length }]);
+    service.addPiece({ length: 24, width: 12, quantity: 2, grainDirection: GrainDirection.Length });
     await service.updateCutSheetAsync();
 
     expect(listener).toHaveBeenCalled();

@@ -1,5 +1,8 @@
 # @tallman5/cut-sheet-generator
 
+> !WARNING
+> This package is still in beta. Breaking changes may occur.
+
 ## Overview
 The **Cut Sheet Generator** is a JavaScript/TypeScript module that efficiently arranges pieces onto stock materials while minimizing waste and reducing the number of cuts. The algorithm utilizes a **best-fit guillotine packing strategy**, considers **grain direction**, and generates **visual representations** (SVG) for layout visualization.
 

@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { generateCutSheetsAsync, generateCutSheetSvgAsync, generateLegendAsync } from "../src/cut-sheet-generator/generator";
-import { IGeneratorConfig, IGeneratorResult } from "../src/cut-sheet-generator/models";
+import { GrainDirection, IGeneratorConfig, IGeneratorResult } from "../src/cut-sheet-generator/models";
 
 describe('Generator Functions', () => {
     let generatorConfig: IGeneratorConfig;
@@ -8,33 +8,33 @@ describe('Generator Functions', () => {
 
     beforeAll(() => {
         generatorConfig = {
-            stockMaterials: [{ length: 96, width: 48, quantity: 8 }],
+            stockMaterials: [{ length: 96, width: 48, quantity: 8, grainDirection: GrainDirection.Length }],
             pieces: [
-                // { length: 31.25, width: 22, quantity: 8 },   // cab side
-                // { length: 19.5, width: 3.5, quantity: 24 },  // stretcher
-                // { length: 31.25, width: 3.5, quantity: 4 },     // cab brace
+                // { length: 31.25, width: 22, quantity: 8, grainDirection: GrainDirection.Length },   // cab side
+                // { length: 19.5, width: 3.5, quantity: 24, grainDirection: GrainDirection.Length },  // stretcher
+                // { length: 31.25, width: 3.5, quantity: 4, grainDirection: GrainDirection.Length },     // cab brace
 
-                { length: 22.25, width: 20, quantity: 24 },     // drawer bottom
+                { length: 22.25, width: 20, quantity: 24, grainDirection: GrainDirection.Length },     // drawer bottom
 
-                { length: 19.375, width: 1.1875, quantity: 8 }, // 1U dado
-                { length: 20.75, width: 1.1875, quantity: 8 },  // 1U rabbet
-                { length: 18.375, width: 1.1875, quantity: 4 }, // 1U false front
+                { length: 19.375, width: 1.1875, quantity: 8, grainDirection: GrainDirection.Length }, // 1U dado
+                { length: 20.75, width: 1.1875, quantity: 8, grainDirection: GrainDirection.Length },  // 1U rabbet
+                { length: 18.375, width: 1.1875, quantity: 4, grainDirection: GrainDirection.Length }, // 1U false front
 
-                { length: 19.375, width: 2.875, quantity: 8 }, // 2U dado
-                { length: 20.75, width: 2.875, quantity: 8 },  // 2U rabbet
-                { length: 18.375, width: 2.875, quantity: 4 }, // 2U false front
+                { length: 19.375, width: 2.875, quantity: 8, grainDirection: GrainDirection.Length }, // 2U dado
+                { length: 20.75, width: 2.875, quantity: 8, grainDirection: GrainDirection.Length },  // 2U rabbet
+                { length: 18.375, width: 2.875, quantity: 4, grainDirection: GrainDirection.Length }, // 2U false front
 
-                { length: 19.375, width: 4.625, quantity: 8 }, // 3U dado
-                { length: 20.75, width: 4.625, quantity: 8 },  // 3U rabbet
-                { length: 18.375, width: 4.625, quantity: 4 }, // 3U false front
+                { length: 19.375, width: 4.625, quantity: 8, grainDirection: GrainDirection.Length }, // 3U dado
+                { length: 20.75, width: 4.625, quantity: 8, grainDirection: GrainDirection.Length },  // 3U rabbet
+                { length: 18.375, width: 4.625, quantity: 4, grainDirection: GrainDirection.Length }, // 3U false front
 
-                { length: 19.375, width: 6.375, quantity: 8 }, // 4U dado
-                { length: 20.75, width: 6.375, quantity: 8 },  // 4U rabbet
-                { length: 18.375, width: 6.375, quantity: 4 }, // 4U false front
+                { length: 19.375, width: 6.375, quantity: 8, grainDirection: GrainDirection.Length }, // 4U dado
+                { length: 20.75, width: 6.375, quantity: 8, grainDirection: GrainDirection.Length },  // 4U rabbet
+                { length: 18.375, width: 6.375, quantity: 4, grainDirection: GrainDirection.Length }, // 4U false front
 
-                { length: 19.375, width: 8.125, quantity: 8 }, // 5U dado
-                { length: 20.75, width: 8.125, quantity: 8 },  // 5U rabbet
-                { length: 18.375, width: 8.125, quantity: 4 }, // 5U false front
+                { length: 19.375, width: 8.125, quantity: 8, grainDirection: GrainDirection.Length }, // 5U dado
+                { length: 20.75, width: 8.125, quantity: 8, grainDirection: GrainDirection.Length },  // 5U rabbet
+                { length: 18.375, width: 8.125, quantity: 4, grainDirection: GrainDirection.Length }, // 5U false front
             ],
             considerGrain: false,
             kerf: 0.125,

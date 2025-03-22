@@ -1,18 +1,27 @@
 {
-  "name": "cut-sheet-generator",
-  "version": "1.0.0",
+  "name": "@tallman5/cut-sheet-generator",
+  "version": "1.0.0-beta.1",
   "private": true,
-  "description": "cut-sheet-generator",
+  "description": "An optimized cut sheet generator that efficiently arranges pieces on stock materials, minimizing waste and generating visual layouts in SVG and PNG formats.",
   "author": "tallman5",
   "keywords": [
-    "gatsby"
+    "woodworking",
+    "cut-sheet-generator",
+    "cut-list-optimizer",
+    "cutting-planner",
+    "panel-cutting",
+    "bin-packing",
+    "guillotine-cutting",
+    "kerf-adjustment"
   ],
+  "license": "CC-BY-NC-SA-4.0",
   "scripts": {
     "build": "gatsby build",
     "clean": "gatsby clean",
     "develop": "gatsby develop",
     "dist": "tsc --project tsconfig.build.json",
-    "distpackpub": "tsc --project tsconfig.build.json && npm pack && npm publish --access=public",
+    "distpack": "tsc --project tsconfig.build.json && npm pack",
+    "postinstall": "node scripts/postinstall.js",
     "serve": "gatsby serve",
     "start": "gatsby develop",
     "test": "jest",
