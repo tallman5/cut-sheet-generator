@@ -1,13 +1,14 @@
-import { IGeneratorConfig, IGeneratorResult, ILayout, INode, IPanel } from "./models";
+import { generateUuid } from "@tallman5/core-js";
+import { GrainDirection, IGeneratorResult, INode, IPanel, IProject } from "./models";
 
-function explodeConfig(config: IGeneratorConfig): IGeneratorConfig {
+function explodeProject(project: IProject): IProject {
   const explodePanels = (panels: IPanel[]) =>
     panels.flatMap(panel => Array(panel.quantity).fill({ ...panel, quantity: 1 }));
 
   return {
-    ...config,
-    pieces: explodePanels(config.pieces),
-    stockMaterials: explodePanels(config.stockMaterials),
+    ...project,
+    pieces: explodePanels(project.pieces),
+    stockMaterials: explodePanels(project.stockMaterials),
   };
 }
 
@@ -32,11 +33,11 @@ async function findBestFitNodeAsync(root: INode, width: number, length: number):
   return bestFit;
 }
 
-export async function generateCutSheetsAsync(config: IGeneratorConfig): Promise<IGeneratorResult> {
-  let layout: ILayout[] = [];
+export async function generateCutSheetsAsync(project: IProject): Promise<IGeneratorResult> {
+  let layout: IPanel[] = [];
   let waste = 0;
-  const kerf = config.kerf || 0;
-  const explodedConfig = explodeConfig(config);
+  const kerf = project.kerf || 0;
+  const explodedConfig = explodeProject(project);
 
   explodedConfig.pieces.sort((a, b) => Math.max(b.length, b.width) - Math.max(a.length, a.width));
   let remainingPieces = [...explodedConfig.pieces]; // Copy to avoid modifying the original
@@ -48,9 +49,20 @@ export async function generateCutSheetsAsync(config: IGeneratorConfig): Promise<
 
   for (let stockIndex = 0; stockIndex < explodedConfig.stockMaterials.length; stockIndex++) {
     let stock = explodedConfig.stockMaterials[stockIndex];
-    const root: INode = { x: 0, y: 0, width: stock.width, length: stock.length, used: false };
+    const root: INode = {
+      x: 0,
+      y: 0,
+      width: stock.width,
+      length: stock.length,
+      used: false,
+      grainDirection: GrainDirection.Any,
+      id: generateUuid(),
+      quantity: 0,
+      color: "",
+      stockIndex: 0
+    };
 
-    let usedSpace: ILayout[] = [];
+    let usedSpace: IPanel[] = [];
     let newRemainingPieces: IPanel[] = []; // Track pieces that still need placement
 
     for (let piece of remainingPieces) {
@@ -65,8 +77,20 @@ export async function generateCutSheetsAsync(config: IGeneratorConfig): Promise<
         }
 
         let color = colorMap.get(pieceKey) || "black";
-        layout.push({ x: placedNode.x, y: placedNode.y, length: piece.length, width: piece.width, stockIndex, color });
-        usedSpace.push({ x: placedNode.x, y: placedNode.y, length: piece.length, width: piece.width, stockIndex, color });
+        layout.push(
+          {
+            x: placedNode.x, y: placedNode.y, length: piece.length, width: piece.width, stockIndex, color,
+            grainDirection: GrainDirection.Any,
+            id: generateUuid(),
+            quantity: 0
+          }
+        );
+        usedSpace.push({
+          x: placedNode.x, y: placedNode.y, length: piece.length, width: piece.width, stockIndex, color,
+          grainDirection: GrainDirection.Any,
+          id: generateUuid(),
+          quantity: 0
+        });
       } else {
         newRemainingPieces.push(piece); // If piece couldn't be placed, keep it
       }
@@ -83,7 +107,7 @@ export async function generateCutSheetsAsync(config: IGeneratorConfig): Promise<
   return { layout, waste };
 }
 
-export async function generateCutSheetSvgAsync(stockMaterials: IPanel[], layout: ILayout[]): Promise<string> {
+export async function generateCutSheetSvgAsync(stockMaterials: IPanel[], layout: IPanel[]): Promise<string> {
   const padding = 5;
   const strokeWidth = .1;
 
@@ -118,8 +142,8 @@ export async function generateCutSheetSvgAsync(stockMaterials: IPanel[], layout:
   return svg;
 }
 
-export async function generateLegendAsync(layout: ILayout[]): Promise<ILayout[]> {
-  const legend: ILayout[] = [];
+export async function generateLegendAsync(layout: IPanel[]): Promise<IPanel[]> {
+  const legend: IPanel[] = [];
   const seen = new Set<string>();
 
   layout.forEach(piece => {
@@ -135,7 +159,21 @@ export async function generateLegendAsync(layout: ILayout[]): Promise<ILayout[]>
 
 async function splitNodeAsync(node: INode, width: number, length: number, kerf: number): Promise<INode> {
   node.used = true;
-  node.down = { x: node.x, y: node.y + length + kerf, width: node.width, length: node.length - length - kerf, used: false };
-  node.right = { x: node.x + width + kerf, y: node.y, width: node.width - width - kerf, length, used: false };
+  node.down = {
+    x: node.x, y: node.y + length + kerf, width: node.width, length: node.length - length - kerf, used: false,
+    color: "",
+    grainDirection: GrainDirection.Any,
+    id: generateUuid(),
+    quantity: 0,
+    stockIndex: 0
+  };
+  node.right = {
+    x: node.x + width + kerf, y: node.y, width: node.width - width - kerf, length, used: false,
+    color: "",
+    grainDirection: GrainDirection.Any,
+    id: generateUuid(),
+    quantity: 0,
+    stockIndex: 0
+  };
   return node;
 }
